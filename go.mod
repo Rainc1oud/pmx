@@ -1,4 +1,4 @@
-module github.com/wcamarao/pmx
+module github.com/Rainc1oud/pmx
 
 go 1.19
 

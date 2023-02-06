@@ -7,10 +7,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/Rainc1oud/pmx"
+	"github.com/Rainc1oud/pmx/fxt"
 	"github.com/jackc/pgx/v5"
 	"github.com/stretchr/testify/suite"
-	"github.com/wcamarao/pmx"
-	"github.com/wcamarao/pmx/fxt"
 )
 
 type UpdateSuite struct {
