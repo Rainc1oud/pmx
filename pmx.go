@@ -99,14 +99,14 @@ func UpdateCT(ctx context.Context, e Executor, entity interface{}, options *Upda
 	v := reflect.ValueOf(entity)
 
 	if t.Kind() != reflect.Ptr {
-		return nil, ErrInvalidRef
+		return pgconn.CommandTag{}, ErrInvalidRef
 	}
 
 	t = t.Elem()
 	v = v.Elem()
 
 	if t.Kind() != reflect.Struct {
-		return nil, ErrInvalidRef
+		return pgconn.CommandTag{}, ErrInvalidRef
 	}
 
 	buf := bytes.NewBufferString(
