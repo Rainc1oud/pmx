@@ -2,6 +2,8 @@ package pmx_test
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"testing"
 
 	"github.com/jackc/pgx/v5"
@@ -16,7 +18,7 @@ type SelectSliceSuite struct {
 }
 
 func (s *SelectSliceSuite) SetupTest() {
-	conn, err := pgx.Connect(context.Background(), "postgresql://postgres:postgres@localhost/pmx")
+	conn, err := pgx.Connect(context.Background(), fmt.Sprintf("postgresql://%s:%s@localhost/pmx", os.Getenv("PGUSER"), os.Getenv("PGPASSWORD")))
 	if err != nil {
 		panic(err)
 	}

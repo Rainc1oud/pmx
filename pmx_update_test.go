@@ -2,6 +2,8 @@ package pmx_test
 
 import (
 	"context"
+	"fmt"
+	"os"
 	"testing"
 	"time"
 
@@ -17,7 +19,7 @@ type UpdateSuite struct {
 }
 
 func (s *UpdateSuite) SetupTest() {
-	conn, err := pgx.Connect(context.Background(), "postgresql://postgres:postgres@localhost/pmx")
+	conn, err := pgx.Connect(context.Background(), fmt.Sprintf("postgresql://%s:%s@localhost/pmx", os.Getenv("PGUSER"), os.Getenv("PGPASSWORD")))
 	if err != nil {
 		panic(err)
 	}
