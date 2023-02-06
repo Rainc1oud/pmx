@@ -94,7 +94,7 @@ func Update(ctx context.Context, e Executor, entity interface{}, options *Update
 }
 
 // UpdateCT (CommandTag) returns both the upstream commandTag and error
-func UpdateCT(ctx context.Context, e Executor, entity interface{}, options *UpdateOptions) (*pgconn.CommandTag, error) {
+func UpdateCT(ctx context.Context, e Executor, entity interface{}, options *UpdateOptions) (pgconn.CommandTag, error) {
 	t := reflect.TypeOf(entity)
 	v := reflect.ValueOf(entity)
 
@@ -168,13 +168,13 @@ func UpdateCT(ctx context.Context, e Executor, entity interface{}, options *Upda
 		column := sf.Tag.Get("db")
 
 		if !ok {
-			return nil, fmt.Errorf("struct field not found: %s", field)
+			return pgconn.CommandTag{}, fmt.Errorf("struct field not found: %s", field)
 		}
 		if len(column) == 0 {
-			return nil, fmt.Errorf("struct field must be annotated: %s", field)
+			return pgconn.CommandTag{}, fmt.Errorf("struct field must be annotated: %s", field)
 		}
 		if !v.FieldByName(field).CanInterface() {
-			return nil, fmt.Errorf("struct field must be exported: %s", field)
+			return pgconn.CommandTag{}, fmt.Errorf("struct field must be exported: %s", field)
 		}
 
 		args = append(args, v.FieldByName(field).Interface())
@@ -190,10 +190,10 @@ func UpdateCT(ctx context.Context, e Executor, entity interface{}, options *Upda
 
 	ctag, err := e.Exec(ctx, buf.String(), args...)
 	if err != nil {
-		return &ctag, err
+		return ctag, err
 	}
 
-	return &ctag, nil
+	return ctag, nil
 }
 
 func Select(ctx context.Context, s Selector, dest interface{}, sql string, args ...interface{}) (bool, error) {
