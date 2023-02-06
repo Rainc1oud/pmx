@@ -1,5 +1,9 @@
 export PGUSER=postgres
-export PGPASSWORD=postgres
+export PGPASSWORD=mypgsecretpass1234
+export PGHOSTADDR=127.0.0.1
+export PGPORT=15432
+export PGSSLMODE=disable
+
 
 test: db.reset
 	@go test -count=1 ./...
