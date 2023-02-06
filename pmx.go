@@ -89,18 +89,24 @@ func Insert(ctx context.Context, e Executor, entity interface{}) error {
 }
 
 func Update(ctx context.Context, e Executor, entity interface{}, options *UpdateOptions) error {
+	_, err := UpdateCT(ctx, e, entity, options)
+	return err
+}
+
+// UpdateCT (CommandTag) returns both the upstream commandTag and error
+func UpdateCT(ctx context.Context, e Executor, entity interface{}, options *UpdateOptions) (*pgconn.CommandTag, error) {
 	t := reflect.TypeOf(entity)
 	v := reflect.ValueOf(entity)
 
 	if t.Kind() != reflect.Ptr {
-		return ErrInvalidRef
+		return nil, ErrInvalidRef
 	}
 
 	t = t.Elem()
 	v = v.Elem()
 
 	if t.Kind() != reflect.Struct {
-		return ErrInvalidRef
+		return nil, ErrInvalidRef
 	}
 
 	buf := bytes.NewBufferString(
@@ -162,13 +168,13 @@ func Update(ctx context.Context, e Executor, entity interface{}, options *Update
 		column := sf.Tag.Get("db")
 
 		if !ok {
-			return fmt.Errorf("struct field not found: %s", field)
+			return nil, fmt.Errorf("struct field not found: %s", field)
 		}
 		if len(column) == 0 {
-			return fmt.Errorf("struct field must be annotated: %s", field)
+			return nil, fmt.Errorf("struct field must be annotated: %s", field)
 		}
 		if !v.FieldByName(field).CanInterface() {
-			return fmt.Errorf("struct field must be exported: %s", field)
+			return nil, fmt.Errorf("struct field must be exported: %s", field)
 		}
 
 		args = append(args, v.FieldByName(field).Interface())
@@ -182,12 +188,12 @@ func Update(ctx context.Context, e Executor, entity interface{}, options *Update
 		),
 	)
 
-	_, err := e.Exec(ctx, buf.String(), args...)
+	ctag, err := e.Exec(ctx, buf.String(), args...)
 	if err != nil {
-		return err
+		return &ctag, err
 	}
 
-	return nil
+	return &ctag, nil
 }
 
 func Select(ctx context.Context, s Selector, dest interface{}, sql string, args ...interface{}) (bool, error) {
